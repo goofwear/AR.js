@@ -109,6 +109,8 @@
 	var markerRoot1 = new THREE.Group
 	markerRoot1.name = 'marker1'
 	scene.add(markerRoot1)
+
+      scene.add(new THREE.AmbientLight(0xFFFFFF));
 	var markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
 		type : 'pattern',
 		patternUrl : THREEx.ArToolkitContext.baseURL + '../data/data/marker-m.pat',
@@ -126,7 +128,6 @@
 
 	//debugger
 	markerRoot1.add( THREEx.Planets.createSun() );
-   markerRoot1.add(new THREE.AmbientLight(0xFFFFFF));
 
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -151,7 +152,6 @@
 	var mesh	= new THREE.Mesh( geometry, material );
 	markerRoot2.add( mesh );
     markerRoot2.add( THREEx.Planets.createMercury() );
-    markerRoot2.add(new THREE.AmbientLight(0xFFFFFF));
 
     /// Venus
       // build markerControls
@@ -170,7 +170,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createVenus() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 
 
       /// EARTH
@@ -190,7 +189,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createEarth() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 
 
       /// Mars
@@ -210,7 +208,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createMars() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 
 
 
@@ -231,7 +228,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createJupiter() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 
       /// Saturn
       // build markerControls
@@ -250,7 +246,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createSaturn() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 
 
 
@@ -271,7 +266,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createUranus() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 
       /// Neptune
       // build markerControls
@@ -290,7 +284,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createNeptune() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 
       /// Pluto
       // build markerControls
@@ -309,7 +302,6 @@
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
       markerRoot3.add( THREEx.Planets.createPluto() );
-      markerRoot3.add(new THREE.AmbientLight(0xFFFFFF));
 })()
 
 
