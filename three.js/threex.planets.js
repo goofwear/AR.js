@@ -1,418 +1,344 @@
-var THREEx = THREEx || {}
+var THREEx = THREEx || {};
 
-THREEx.Planets	= {}
+THREEx.Planets = {};
 
-THREEx.Planets.baseURL	= '../'
+THREEx.Planets.baseURL = "../images/";
 
-// from http://planetpixelemporium.com/
+// maps from http://planetpixelemporium.com/ and others (see readme)
 
-THREEx.Planets.createSun	= function(){
-	var geometry	= new THREE.SphereGeometry(1, 32, 32)
-	var texture	= THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/sunmap.jpg')
-	var material	= new THREE.MeshPhongMaterial({
-		map	: texture,
-		bumpMap	: texture,
-		bumpScale: 0.05,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-  mesh.rotation.z +=  90 * Math.PI / 180;
-	return mesh
-}
+THREEx.Planets.params = {
+  // texture map, bump map, cloud map, arbitrary radius, axis tilt in degrees, rotation period in days
+  // ring: texture map, outer radius rel. to planet, opacity
+  "sol": {map: "sunmap.jpg", radius: 1.2, tilt: 7.25, rot: 1.0438,
+    corona: {map: "solarcorona.jpg", radius:5.1} },
+  "mer": {map: "mercurymap.jpg", bump:"mercurybump.jpg", radius: 0.3, tilt: 0, rot: 58.646},
+  "ven": {map: "venusmap.jpg", radius: 0.4, tilt: 177.3, rot: 4.05},
+  "ter": {map: "earthmap.jpg", bump:"earthbump.jpg", clouds:"earthclouds.png", radius: 0.4, tilt: 23.45, rot: 0.9973},
+  "lun": {map: "moonmap.jpg", bump:"moonbump.jpg", radius: 0.25, tilt: 1.54, rot: 27.3217},
+  "mar": {map: "marsmap.jpg", bump:"marsbump.jpg", clouds:"marsclouds.png", radius: 0.35, tilt: 25.19, rot: 1.026},
+  "pho": {map: "phobosmap.jpg", bump: "phobosbump.jpg", radius: 0.05, tilt: 0.009, rot: 0.3189},
+  "dei": {map: "deimosmap.jpg", radius: 0.04, tilt: 0.889, rot: 1.2624},
+  "ves": {map: "vestamap.jpg", bump: "vestabump.jpg", radius: 0.1, tilt: 29.0, rot: 0.223},
+  "cer": {map: "ceresmap.jpg", radius: 0.16, tilt: 4.0, rot: 0.378},
+  "jup": {map: "jupitermap.jpg", radius: 1.2, tilt: 3.12, rot: 0.414,
+    ring: {map: "jupiterrings.png", radius: 2.7, opacity: 0.5} },
+  "io": {map: "iomap.jpg", radius: 0.25, tilt: 0.0, rot: 1.7691},
+  "eur": {map: "europamap.jpg", radius: 0.25, tilt: 0.016, rot: 3.5512},
+  "gan": {map: "ganymedemap.jpg", radius: 0.3, tilt: 0.068, rot: 7.1546},
+  "cal": {map: "callistomap.jpg", radius: 0.3, tilt: 0.356, rot: 16.689},
+  "sat": {map: "saturnmap.jpg", radius: 1.2, tilt: 26.73, rot: 0.444,
+    ring: {map: "saturnrings.png", radius: 2.6, opacity: 1.0} },
+  "mim": {map: "mimasmap.jpg", radius: 0.1, tilt: 0.002, rot: 0.942},
+  "ence": {map: "enceladusmap.jpg", radius: 0.1, tilt: 0.002, rot: 1.37},
+  "tet": {map: "tethysmap.jpg", radius: 0.15, tilt: 0.001, rot: 1.888},
+  "dio": {map: "dionemap.jpg", radius: 0.15, tilt: 0.005, rot: 2.737},
+  "rhe": {map: "rheamap.jpg", radius: 0.2, tilt: 0.036, rot: 4.518},
+  "tit": {map: "titanclouds.jpg", radius: 0.35, tilt: 0.629, rot: 15.95},
+  "hyp": {map: "hyperionmap.jpg", radius: 0.08, tilt: 0.564, rot: 21.28},
+  "iap": {map: "iapetusmap.jpg", radius: 0.15, tilt: 15.21, rot: 79.33},
+  "phoe": {map: "phoebemap.jpg", radius: 0.08, tilt: 26.723, rot: 0.4},
+  "ura": {map: "uranusmap.jpg", radius: 1.0, tilt: 97.86, rot: 0.718,
+    ring: {map: "uranusrings.png", radius: 2.0, opacity: 0.5} },
+  "ari": {map: "arielmap.jpg", radius: 0.15, tilt: 0.0, rot: 2.520},
+  "umb": {map: "umbrielmap.jpg", radius: 0.15, tilt: 0.0, rot: 4.144},
+  "tita": {map: "titaniamap.jpg", radius: 0.2, tilt: 0.0, rot: 8.706},
+  "obe": {map: "oberonmap.jpg", radius: 0.2, tilt: 0.0, rot: 13.46},
+  "mir": {map: "mirandamap.jpg", radius: 0.1, tilt: 0.0, rot: 1.413},
+  "nep": {map: "neptunemap.jpg", radius: 1.0, tilt: 29.56, rot: 0.671,
+    ring: {map: "neptunerings.png", radius: 2.5, opacity: 0.8} },
+  "tri": {map: "tritonmap.jpg", radius: 0.2, tilt: 0.01, rot: 5.877},
+  "pro": {map: "proteusmap.jpg", radius: 0.1, tilt: 0.974, rot: 1.122},
+  "plu": {map: "plutomap.jpg", radius: 0.2, tilt: 122.53, rot: 6.387},
+  "cha": {map: "charonmap.jpg", radius: 0.1, tilt: 0.0, rot: 6.387}
+};
 
-THREEx.Planets.createMercury	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var material	= new THREE.MeshPhongMaterial({
-		map	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/mercurymap.jpg'),
-		bumpMap	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/mercurybump.jpg'),
-		bumpScale: 0.005,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	//mesh.rotation.x +=  120 * Math.PI / 180;
-	mesh.rotation.z +=  90 * Math.PI / 180;
+
+// Friendly names
+var substitutes = {
+  "Sun": "sol",
+  "Mercury": "mer",
+  "Venus": "ven",
+  "Earth": "ter",
+  "Moon": "lun",
+  "Mars": "mar",
+  "Phobos": "pho",
+  "Deimos": "dei",
+  "Vesta": "ves",
+  "Ceres": "cer",
+  "Jupiter": "jup",
+  "Io": "io",
+  "Europa": "eur",
+  "Ganymede": "gan",
+  "Callisto": "cal",
+  "Saturn": "sat",
+  "Mimas": "mim",
+  "Enceladus": "ence",
+  "Tethys": "tet",
+  "Dione": "dio",
+  "Rhea": "rhe",
+  "Titan": "tit",
+  "Iapetus": "iap",
+  "Phoebe": "phoe",
+  "Uranus": "ura",
+  "Ariel": "ari",
+  "Umbriel": "umb",
+  "Titania": "tita",
+  "Oberon": "obe",
+  "Miranda": "mir",
+  "Neptune": "nep",
+  "Triton": "tri",
+  "Pluto": "plu",
+  "Charo": "cha",
+};
+
+THREEx.Planets.createSun = function() { return THREEx.Planets.create("sun"); };
+THREEx.Planets.createMercury = function() { return THREEx.Planets.create("mercury"); };
+THREEx.Planets.createVenus = function() { return THREEx.Planets.create("venus"); };
+THREEx.Planets.createEarth = function() { return THREEx.Planets.create("earth", true); };
+THREEx.Planets.createMoon = function() { return THREEx.Planets.create("moon"); };
+THREEx.Planets.createMars = function() { return THREEx.Planets.create("mars"); };
+THREEx.Planets.createJupiter = function() { return THREEx.Planets.create("jupiter"); };
+THREEx.Planets.createJupiterRing = function() { return THREEx.Planets.createRing("jupiter"); };
+THREEx.Planets.createSaturn = function() { return THREEx.Planets.create("saturn", true); };
+THREEx.Planets.createSaturnRing = function() { return THREEx.Planets.createRing("saturn"); };
+THREEx.Planets.createUranus = function() { return THREEx.Planets.create("uranus", true); };
+THREEx.Planets.createUranusRing = function() { return THREEx.Planets.createRing("uranus"); };
+THREEx.Planets.createNeptune = function() { return THREEx.Planets.create("neptune"); };
+THREEx.Planets.createNeptuneRing = function() { return THREEx.Planets.createRing("neptune"); };
+THREEx.Planets.createPluto = function() { return THREEx.Planets.create("pluto"); };
+
+THREEx.Planets.createStarfield = function() {
+  var loader = new THREE.TextureLoader();
+  var texture = loader.load(THREEx.Planets.baseURL + "tycho-skymap.jpg");
+  var material = new THREE.MeshBasicMaterial({
+    map  : texture,
+    side  : THREE.BackSide
+  })
+  var geometry = new THREE.SphereGeometry(1000, 32, 32)
+  var mesh = new THREE.Mesh(geometry, material)
   return mesh
 }
 
-THREEx.Planets.createVenus	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var material	= new THREE.MeshPhongMaterial({
-		map	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/venusmap.jpg'),
-		bumpMap	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/venusbump.jpg'),
-		bumpScale: 0.005,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-  mesh.rotation.z +=  90 * Math.PI / 180;
-	return mesh	
-}
+// Create body, skipextras true -> don't create cloud, ring etc.
+THREEx.Planets.create = function(body, skipextras) {
+  if (!THREEx.Planets.params.hasOwnProperty(body)) {
+    if (substitutes.hasOwnProperty(body)) body = substitutes[body];
+    else {
+      console.log("Object not found: " + body);
+      return null;
+    }
+  }
+  var p = THREEx.Planets.params[body], arg = {};
+  var loader = new THREE.TextureLoader();
 
-THREEx.Planets.createEarth	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var material	= new THREE.MeshPhongMaterial({
-		map		: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/earthmap1k.jpg'),
-		bumpMap		: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/earthbump1k.jpg'),
-		bumpScale	: 0.05,
-		specularMap	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/earthspec1k.jpg'),
-		specular	: new THREE.Color('grey'),
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-  mesh.rotation.y = Math.PI / 2;
-  mesh.rotation.x = Math.PI / 2;
-	return mesh	
-}
+  var geometry = new THREE.SphereGeometry(p.radius, 32, 32);
 
-THREEx.Planets.createEarthCloud	= function(){
-	// create destination canvas
-	var canvasResult	= document.createElement('canvas')
-	canvasResult.width	= 1024
-	canvasResult.height	= 512
-	var contextResult	= canvasResult.getContext('2d')		
+  arg.map = loader.load(THREEx.Planets.baseURL + p.map);
 
-	// load earthcloudmap
-	var imageMap	= new Image();
-	imageMap.addEventListener("load", function() {
-		
-		// create dataMap ImageData for earthcloudmap
-		var canvasMap	= document.createElement('canvas')
-		canvasMap.width	= imageMap.width
-		canvasMap.height= imageMap.height
-		var contextMap	= canvasMap.getContext('2d')
-		contextMap.drawImage(imageMap, 0, 0)
-		var dataMap	= contextMap.getImageData(0, 0, canvasMap.width, canvasMap.height)
+  if (p.hasOwnProperty("bump")) {
+    arg.bumpMap = loader.load(THREEx.Planets.baseURL + p.bump);
+    arg.bumpScale = 0.001;
+  }
+  if (p.hasOwnProperty("spec")) {
+    arg.specularMap = loader.load(THREEx.Planets.baseURL + p.spec);
+  }
 
-		// load earthcloudmaptrans
-		var imageTrans	= new Image();
-		imageTrans.addEventListener("load", function(){
-			// create dataTrans ImageData for earthcloudmaptrans
-			var canvasTrans		= document.createElement('canvas')
-			canvasTrans.width	= imageTrans.width
-			canvasTrans.height	= imageTrans.height
-			var contextTrans	= canvasTrans.getContext('2d')
-			contextTrans.drawImage(imageTrans, 0, 0)
-			var dataTrans		= contextTrans.getImageData(0, 0, canvasTrans.width, canvasTrans.height)
-			// merge dataMap + dataTrans into dataResult
-			var dataResult		= contextMap.createImageData(canvasMap.width, canvasMap.height)
-			for(var y = 0, offset = 0; y < imageMap.height; y++){
-				for(var x = 0; x < imageMap.width; x++, offset += 4){
-					dataResult.data[offset+0]	= dataMap.data[offset+0]
-					dataResult.data[offset+1]	= dataMap.data[offset+1]
-					dataResult.data[offset+2]	= dataMap.data[offset+2]
-					dataResult.data[offset+3]	= 255 - dataTrans.data[offset+0]
-				}
-			}
-			// update texture with result
-			contextResult.putImageData(dataResult,0,0)	
-			material.map.needsUpdate = true;
-		})
-		imageTrans.src	= THREEx.Planets.baseURL+'images/earthcloudmaptrans.jpg';
-	}, false);
-	imageMap.src	= THREEx.Planets.baseURL+'images/earthcloudmap.jpg';
+  if (body === "sol") { //ommmmmmm
+    var material = new THREE.MeshBasicMaterial(arg);
+  } else {
+    var material = new THREE.MeshPhongMaterial(arg);
+    arg.specular = new THREE.Color( 0x333333 );
+    arg.shininess = 0.1;
+  }
+  var mesh = new THREE.Mesh(geometry, material);
 
-	var geometry	= new THREE.SphereGeometry(0.51, 32, 32)
-	var material	= new THREE.MeshPhongMaterial({
-		map		: new THREE.Texture(canvasResult),
-		side		: THREE.DoubleSide,
-		transparent	: true,
-		opacity		: 0.8,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	return mesh	
+  if (!skipextras && p.hasOwnProperty("ring")) {
+    mesh.receiveShadow = true;
+    mesh.castShadow = true;
+    var ring = THREEx.Planets.createRings(body);
+    ring.receiveShadow = true;
+    ring.castShadow = true;
+    mesh.add(ring);
+  };
+
+  if (!skipextras && p.hasOwnProperty("clouds")) {
+    mesh.add(THREEx.Planets.createClouds(body));
+  }
+
+  if (!skipextras && body === "sol") {
+    // mesh.add(THREEx.Planets.createCorona());
+  }
+
+  mesh.rotation.set(THREE.Math.degToRad(25), 0, THREE.Math.degToRad(p.tilt));
+  return mesh;
 }
 
 
-THREEx.Planets.createMoon	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var material	= new THREE.MeshPhongMaterial({
-		map	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/moonmap1k.jpg'),
-		bumpMap	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/moonbump1k.jpg'),
-		bumpScale: 0.002,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	return mesh	
+// Planetary rings
+THREEx.Planets.createRings = function(body) {
+  if (!THREEx.Planets.params.hasOwnProperty(body)) {
+    if (substitutes.hasOwnProperty(body)) body = substitutes[body];
+    else {
+      console.log("Object not found: " + body);
+      return null;
+    }
+  }
+  if (!THREEx.Planets.params[body].hasOwnProperty("ring")) {
+    console.log("Rings not found: " + body);
+    return null;
+  }
+  var p = THREEx.Planets.params[body], map = THREEx.Planets.baseURL + p.ring.map,
+    loader = new THREE.TextureLoader();
+
+  var geometry = new THREEx.Planets.RingGeometry(p.radius * 1.05, p.ring.radius, 64, 64);
+  var material = new THREE.MeshPhongMaterial({
+    map: loader.load(map),
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: p.ring.opacity
+  });
+  var mesh = new THREE.Mesh(geometry, material);
+  mesh.lookAt(new THREE.Vector3(0, 1, 0));
+  mesh.name = body + "rings";
+  return mesh;
 }
 
-THREEx.Planets.createMars	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var material	= new THREE.MeshPhongMaterial({
-		map	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/marsmap1k.jpg'),
-		bumpMap	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/marsbump1k.jpg'),
-		bumpScale: 0.05,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-  mesh.rotation.z +=  90 * Math.PI / 180;
-	return mesh	
+// Cloud layer from transparent png, see http://blog.thematicmapping.org/2013/09/creating-webgl-earth-with-threejs.html
+THREEx.Planets.createClouds = function(body) {
+  if (!THREEx.Planets.params.hasOwnProperty(body)) {
+    if (substitutes.hasOwnProperty(body)) body = substitutes[body];
+    else {
+      console.log("Object not found: " + body);
+      return null;
+    }
+  }
+  if (!THREEx.Planets.params[body].hasOwnProperty("clouds")) {
+    console.log("Clouds not found: " + body);
+    return null;
+  }
+  var p = THREEx.Planets.params[body], map = THREEx.Planets.baseURL + p.clouds,
+    loader = new THREE.TextureLoader();
+
+  var mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(p.radius * 1.01, 32, 32),
+    new THREE.MeshPhongMaterial({
+      map: loader.load(map),
+      transparent: true
+    })
+  );
+  mesh.name = body + "clouds";
+  return mesh;
 }
 
-THREEx.Planets.createJupiter	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var texture	= THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/jupitermap.jpg')
-	var material	= new THREE.MeshPhongMaterial({
-		map	: texture,
-		bumpMap	: texture,
-		bumpScale: 0.02,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-  mesh.rotation.z +=  90 * Math.PI / 180;
-	return mesh	
-}
+// Solar corona, based on Lee Stemkoski's https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/Simple-Glow.html
+THREEx.Planets.createCorona = function() {
+  var p = THREEx.Planets.params.sol, map = THREEx.Planets.baseURL + p.corona.map;
+
+  var material = new THREE.SpriteMaterial({
+    map: new THREE.TextureLoader().load(map),
+    color: 0xffff33,
+    transparent: false,
+    blending: THREE.AdditiveBlending
+  });
+  var mesh = new THREE.Sprite(material);
+  mesh.scale.multiplyScalar(p.corona.radius);
+  mesh.name = "solcorona";
+  return mesh;
+};
 
 
-THREEx.Planets.createSaturn	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var texture	= THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/saturnmap.jpg')
-	var material	= new THREE.MeshPhongMaterial({
-		map	: texture,
-		bumpMap	: texture,
-		bumpScale: 0.05,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-  mesh.rotation.z +=  90 * Math.PI / 180;
-	return mesh	
-}
-
-
-THREEx.Planets.createSaturnRing	= function(){
-	// create destination canvas
-	var canvasResult	= document.createElement('canvas')
-	canvasResult.width	= 915
-	canvasResult.height	= 64
-	var contextResult	= canvasResult.getContext('2d')	
-
-	// load earthcloudmap
-	var imageMap	= new Image();
-	imageMap.addEventListener("load", function() {
-		
-		// create dataMap ImageData for earthcloudmap
-		var canvasMap	= document.createElement('canvas')
-		canvasMap.width	= imageMap.width
-		canvasMap.height= imageMap.height
-		var contextMap	= canvasMap.getContext('2d')
-		contextMap.drawImage(imageMap, 0, 0)
-		var dataMap	= contextMap.getImageData(0, 0, canvasMap.width, canvasMap.height)
-
-		// load earthcloudmaptrans
-		var imageTrans	= new Image();
-		imageTrans.addEventListener("load", function(){
-			// create dataTrans ImageData for earthcloudmaptrans
-			var canvasTrans		= document.createElement('canvas')
-			canvasTrans.width	= imageTrans.width
-			canvasTrans.height	= imageTrans.height
-			var contextTrans	= canvasTrans.getContext('2d')
-			contextTrans.drawImage(imageTrans, 0, 0)
-			var dataTrans		= contextTrans.getImageData(0, 0, canvasTrans.width, canvasTrans.height)
-			// merge dataMap + dataTrans into dataResult
-			var dataResult		= contextMap.createImageData(canvasResult.width, canvasResult.height)
-			for(var y = 0, offset = 0; y < imageMap.height; y++){
-				for(var x = 0; x < imageMap.width; x++, offset += 4){
-					dataResult.data[offset+0]	= dataMap.data[offset+0]
-					dataResult.data[offset+1]	= dataMap.data[offset+1]
-					dataResult.data[offset+2]	= dataMap.data[offset+2]
-					dataResult.data[offset+3]	= 255 - dataTrans.data[offset+0]/4
-				}
-			}
-			// update texture with result
-			contextResult.putImageData(dataResult,0,0)	
-			material.map.needsUpdate = true;
-		})
-		imageTrans.src	= THREEx.Planets.baseURL+'images/saturnringpattern.gif';
-	}, false);
-	imageMap.src	= THREEx.Planets.baseURL+'images/saturnringcolor.jpg';
-	
-	var geometry	= new THREEx.Planets._RingGeometry(0.55, 0.75, 64);
-	var material	= new THREE.MeshPhongMaterial({
-		map		: new THREE.Texture(canvasResult),
-		// map		: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/ash_uvgrid01.jpg'),
-		side		: THREE.DoubleSide,
-		transparent	: true,
-		opacity		: 0.8,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	mesh.lookAt(new THREE.Vector3(0.5,-4,1))
-	return mesh	
-}
-
-
-THREEx.Planets.createUranus	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var texture	= THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/uranusmap.jpg')
-	var material	= new THREE.MeshPhongMaterial({
-		map	: texture,
-		bumpMap	: texture,
-		bumpScale: 0.05,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	return mesh	
-}
-
-THREEx.Planets.createUranusRing	= function(){
-	// create destination canvas
-	var canvasResult	= document.createElement('canvas')
-	canvasResult.width	= 1024
-	canvasResult.height	= 72
-	var contextResult	= canvasResult.getContext('2d')	
-
-	// load earthcloudmap
-	var imageMap	= new Image();
-	imageMap.addEventListener("load", function() {
-		
-		// create dataMap ImageData for earthcloudmap
-		var canvasMap	= document.createElement('canvas')
-		canvasMap.width	= imageMap.width
-		canvasMap.height= imageMap.height
-		var contextMap	= canvasMap.getContext('2d')
-		contextMap.drawImage(imageMap, 0, 0)
-		var dataMap	= contextMap.getImageData(0, 0, canvasMap.width, canvasMap.height)
-
-		// load earthcloudmaptrans
-		var imageTrans	= new Image();
-		imageTrans.addEventListener("load", function(){
-			// create dataTrans ImageData for earthcloudmaptrans
-			var canvasTrans		= document.createElement('canvas')
-			canvasTrans.width	= imageTrans.width
-			canvasTrans.height	= imageTrans.height
-			var contextTrans	= canvasTrans.getContext('2d')
-			contextTrans.drawImage(imageTrans, 0, 0)
-			var dataTrans		= contextTrans.getImageData(0, 0, canvasTrans.width, canvasTrans.height)
-			// merge dataMap + dataTrans into dataResult
-			var dataResult		= contextMap.createImageData(canvasResult.width, canvasResult.height)
-			for(var y = 0, offset = 0; y < imageMap.height; y++){
-				for(var x = 0; x < imageMap.width; x++, offset += 4){
-					dataResult.data[offset+0]	= dataMap.data[offset+0]
-					dataResult.data[offset+1]	= dataMap.data[offset+1]
-					dataResult.data[offset+2]	= dataMap.data[offset+2]
-					dataResult.data[offset+3]	= 255 - dataTrans.data[offset+0]/2
-				}
-			}
-			// update texture with result
-			contextResult.putImageData(dataResult,0,0)	
-			material.map.needsUpdate = true;
-		})
-		imageTrans.src	= THREEx.Planets.baseURL+'images/uranusringtrans.gif';
-	}, false);
-	imageMap.src	= THREEx.Planets.baseURL+'images/uranusringcolour.jpg';
-	
-	var geometry	= new THREEx.Planets._RingGeometry(0.55, 0.75, 64);
-	var material	= new THREE.MeshPhongMaterial({
-		map		: new THREE.Texture(canvasResult),
-		// map		: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/ash_uvgrid01.jpg'),
-		side		: THREE.DoubleSide,
-		transparent	: true,
-		opacity		: 0.8,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	mesh.lookAt(new THREE.Vector3(0.5,-4,1))
-	return mesh	
-}
-
-
-THREEx.Planets.createNeptune	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var texture	= THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/neptunemap.jpg')
-	var material	= new THREE.MeshPhongMaterial({
-		map	: texture,
-		bumpMap	: texture,
-		bumpScale: 0.05,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	return mesh	
-}
-
-
-
-THREEx.Planets.createPluto	= function(){
-	var geometry	= new THREE.SphereGeometry(0.5, 32, 32)
-	var material	= new THREE.MeshPhongMaterial({
-		map	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/plutomap1k.jpg'),
-		bumpMap	: THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/plutobump1k.jpg'),
-		bumpScale: 0.005,
-	})
-	var mesh	= new THREE.Mesh(geometry, material)
-	return mesh	
-}
-
-THREEx.Planets.createStarfield	= function(){
-	var texture	= THREE.ImageUtils.loadTexture(THREEx.Planets.baseURL+'images/galaxy_starfield.png')
-	var material	= new THREE.MeshBasicMaterial({
-		map	: texture,
-		side	: THREE.BackSide
-	})
-	var geometry	= new THREE.SphereGeometry(100, 32, 32)
-	var mesh	= new THREE.Mesh(geometry, material)
-	return mesh	
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////
-//		comment								//
-//////////////////////////////////////////////////////////////////////////////////
 
 /**
  * change the original from three.js because i needed different UV
- * 
+ *
  * @author Kaleb Murphy
- * @author jerome etienne
+ * @author Olaf Frohn
  */
-THREEx.Planets._RingGeometry = function ( innerRadius, outerRadius, thetaSegments ) {
+THREEx.Planets.RingGeometry = function (innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength) {
 
-	THREE.Geometry.call( this )
+  THREE.Geometry.call( this );
 
-	innerRadius	= innerRadius || 0
-	outerRadius	= outerRadius || 50
-	thetaSegments	= thetaSegments	|| 8
+  this.type = 'RingGeometry';
 
-	var normal	= new THREE.Vector3( 0, 0, 1 )
+  this.parameters = {
+    innerRadius: innerRadius,
+    outerRadius: outerRadius,
+    thetaSegments: thetaSegments,
+    phiSegments: phiSegments,
+    thetaStart: thetaStart,
+    thetaLength: thetaLength
+  };
 
-	for(var i = 0; i < thetaSegments; i++ ){
-		var angleLo	= (i / thetaSegments) *Math.PI*2
-		var angleHi	= ((i+1) / thetaSegments) *Math.PI*2
+  innerRadius = innerRadius || 0;
+  outerRadius = outerRadius || 50;
 
-		var vertex1	= new THREE.Vector3(innerRadius * Math.cos(angleLo), innerRadius * Math.sin(angleLo), 0);
-		var vertex2	= new THREE.Vector3(outerRadius * Math.cos(angleLo), outerRadius * Math.sin(angleLo), 0);
-		var vertex3	= new THREE.Vector3(innerRadius * Math.cos(angleHi), innerRadius * Math.sin(angleHi), 0);
-		var vertex4	= new THREE.Vector3(outerRadius * Math.cos(angleHi), outerRadius * Math.sin(angleHi), 0);
+  thetaStart = thetaStart !== undefined ? thetaStart : 0;
+  thetaLength = thetaLength !== undefined ? thetaLength : Math.PI * 2;
 
-		this.vertices.push( vertex1 );
-		this.vertices.push( vertex2 );
-		this.vertices.push( vertex3 );
-		this.vertices.push( vertex4 );
-		
+  thetaSegments = thetaSegments !== undefined ? Math.max( 3, thetaSegments ) : 8;
+  phiSegments = phiSegments !== undefined ? Math.max( 1, phiSegments ) : 8;
 
-		var vertexIdx	= i * 4;
+  var i, o, uvs = [], radius = innerRadius, radiusStep = ( ( outerRadius - innerRadius ) / phiSegments );
 
-		// Create the first triangle
-		var face = new THREE.Face3(vertexIdx + 0, vertexIdx + 1, vertexIdx + 2, normal);
-		var uvs = []
+  for ( i = 0; i < phiSegments + 1; i ++ ) {
 
-		var uv = new THREE.Vector2(0, 0)
-		uvs.push(uv)
-		var uv = new THREE.Vector2(1, 0)
-		uvs.push(uv)
-		var uv = new THREE.Vector2(0, 1)
-		uvs.push(uv)
+    // concentric circles inside ring
 
-		this.faces.push(face);
-		this.faceVertexUvs[0].push(uvs);
+    for ( o = 0; o < thetaSegments + 1; o ++ ) {
 
-		// Create the second triangle
-		var face = new THREE.Face3(vertexIdx + 2, vertexIdx + 1, vertexIdx + 3, normal);
-		var uvs = []
+      // number of segments per circle
 
-		var uv = new THREE.Vector2(0, 1)
-		uvs.push(uv)
-		var uv = new THREE.Vector2(1, 0)
-		uvs.push(uv)
-		var uv = new THREE.Vector2(1, 1)
-		uvs.push(uv)
+      var vertex = new THREE.Vector3();
+      var segment = thetaStart + o / thetaSegments * thetaLength;
+      vertex.x = radius * Math.cos( segment );
+      vertex.y = radius * Math.sin( segment );
 
-		this.faces.push(face);
-		this.faceVertexUvs[0].push(uvs);
-	}
+      this.vertices.push( vertex );
+      //uvs.push( new THREE.Vector2( ( vertex.x / outerRadius + 1 ) / 2, ( vertex.y / outerRadius + 1 ) / 2 ) );
+      uvs.push( new THREE.Vector2( i/(thetaSegments-1), o/ (phiSegments-1) ) );
+    }
 
-	this.computeCentroids();
-	this.computeFaceNormals();
+    radius += radiusStep;
 
-	this.boundingSphere = new THREE.Sphere( new THREE.Vector3(), outerRadius );
+  }
+
+  var n = new THREE.Vector3( 0, 0, 1 );
+
+  for ( i = 0; i < phiSegments; i ++ ) {
+
+    // concentric circles inside ring
+
+    var thetaSegment = i * ( thetaSegments + 1 );
+
+    for ( o = 0; o < thetaSegments ; o ++ ) {
+
+      // number of segments per circle
+
+      var segment = o + thetaSegment;
+
+      var v1 = segment;
+      var v2 = segment + thetaSegments + 1;
+      var v3 = segment + thetaSegments + 2;
+
+      this.faces.push( new THREE.Face3( v1, v2, v3, [ n.clone(), n.clone(), n.clone() ] ) );
+      this.faceVertexUvs[ 0 ].push( [ uvs[ v1 ].clone(), uvs[ v2 ].clone(), uvs[ v3 ].clone() ] );
+
+      v1 = segment;
+      v2 = segment + thetaSegments + 2;
+      v3 = segment + 1;
+
+      this.faces.push( new THREE.Face3( v1, v2, v3, [ n.clone(), n.clone(), n.clone() ] ) );
+      this.faceVertexUvs[ 0 ].push( [ uvs[ v1 ].clone(), uvs[ v2 ].clone(), uvs[ v3 ].clone() ] );
+
+    }
+
+  }
+
+  this.computeFaceNormals();
+
+  this.boundingSphere = new THREE.Sphere( new THREE.Vector3(), radius );
 
 };
-console.log(window.THREE)
-THREEx.Planets._RingGeometry.prototype = Object.create( window.THREE.Geometry.prototype );
 
-
+THREEx.Planets.RingGeometry.prototype = Object.create( THREE.Geometry.prototype );
+THREEx.Planets.RingGeometry.prototype.constructor = THREEx.Planets.RingGeometry;

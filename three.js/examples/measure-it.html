@@ -125,9 +125,12 @@
 	var mesh	= new THREE.Mesh( geometry, material );
 	markerRoot1.add( mesh );
 
-
+    var sunM = THREEx.Planets.create("Sun");
 	//debugger
-	markerRoot1.add( THREEx.Planets.createSun() );
+	markerRoot1.add( sunM );
+    onRenderFcts.push(function(delta, now){
+      sunM.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+  });
 
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -151,8 +154,11 @@
 	}); 
 	var mesh	= new THREE.Mesh( geometry, material );
 	markerRoot2.add( mesh );
-    markerRoot2.add( THREEx.Planets.createMercury() );
-
+	var mercuMesh = THREEx.Planets.create("Mercury")
+    markerRoot2.add( mercuMesh );
+  onRenderFcts.push(function(delta, now) {
+    mercuMesh.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+  })
     /// Venus
       // build markerControls
       var markerRoot3 = new THREE.Group
@@ -169,8 +175,11 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createVenus() );
-
+      var venM =  THREEx.Planets.create("Venus");
+      markerRoot3.add(venM );
+      onRenderFcts.push(function(delta, now) {
+        venM.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+      })
 
       /// EARTH
       // build markerControls
@@ -188,8 +197,14 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createEarth() );
-
+      var earthM = THREEx.Planets.create("Earth")
+      markerRoot3.add( earthM );
+      onRenderFcts.push(function(delta, now){
+        earthM.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.0051);
+        earthM.traverse(function(child) {
+          if (child.name.search("cloud") !== -1) child.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+        });
+      });
 
       /// Mars
       // build markerControls
@@ -207,7 +222,11 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createMars() );
+      var marsM = THREEx.Planets.create("Mars")
+      markerRoot3.add( marsM );
+      onRenderFcts.push(function(delta, now){
+        marsM.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+      });
 
 
 
@@ -227,7 +246,11 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createJupiter() );
+      var jupiterM = THREEx.Planets.create("Jupiter")
+      markerRoot3.add( jupiterM );
+      onRenderFcts.push(function(delta, now){
+          jupiterM.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+      });
 
       /// Saturn
       // build markerControls
@@ -245,7 +268,11 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createSaturn() );
+      var satM = THREEx.Planets.create("Saturn")
+      markerRoot3.add( satM );
+      onRenderFcts.push(function(delta, now){
+        satM.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+      });
 
 
 
@@ -265,7 +292,11 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createUranus() );
+      var urMesh = THREEx.Planets.create("Uranus")
+      markerRoot3.add( urMesh );
+      onRenderFcts.push(function(delta, now){
+        urMesh.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+      });
 
       /// Neptune
       // build markerControls
@@ -283,7 +314,12 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createNeptune() );
+      var neptMesh = THREEx.Planets.create("Neptune");
+      markerRoot3.add( neptMesh );
+      onRenderFcts.push(function(delta, now){
+        neptMesh.rotateOnAxis( new THREE.Vector3( 0, 1, 0 ), 0.005);
+      });
+
 
       /// Pluto
       // build markerControls
@@ -301,8 +337,9 @@
       });
       var mesh	= new THREE.Mesh( new THREE.OctahedronGeometry( 0.1, 0 ), material );
       markerRoot3.add( mesh );
-      markerRoot3.add( THREEx.Planets.createPluto() );
+      markerRoot3.add( THREEx.Planets.create("Pluto") );
 })()
+
 
 
 ;(function(){
